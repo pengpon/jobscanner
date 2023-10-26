@@ -78,8 +78,11 @@ export function JobCard({ job }) {
           </Tag>
           <Tag color="gray.500">
             <Icon as={MdAttachMoney} />
-            {toThousandSeparator(data.salary[0])} ~{" "}
-            {toThousandSeparator(data.salary[1])} ({data.salaryType})
+            {data.salaryType !== "other"
+              ? `${toThousandSeparator(data.salary[0])} ~ ${toThousandSeparator(
+                  data.salary[1]
+                )} (${data.salaryType})`
+              : "--"}
           </Tag>
         </Flex>
       </CardFooter>
