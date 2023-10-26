@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { ArrowDownIcon } from "@chakra-ui/icons";
 import JobCardList from "./components/JobCardList";
-import Search from "./components/Sort";
+import SearchKeyword from "./components/SearchKeyword";
 import { padLeft } from "./utils/format";
 import Logo from "./assets/jobscanner-logo.png";
 import "./App.css";
@@ -43,6 +43,7 @@ function App() {
     // filter duplicate key
     const obj = {};
     data.forEach((item) => {
+      item.location = item.location.replaceAll('臺', '台')
       obj[`${item.key}`] = item;
     });
     let result = Object.values(obj);
@@ -100,7 +101,7 @@ function App() {
             m={{ md: "auto", lg: 0 }}
           />
           <Box w={{ md: "100%", lg: "50%" }}>
-            <Search />
+            <SearchKeyword />
           </Box>
           <Box align="end">
             <Button variant="ghost" color="gray.500" onClick={sortBySalary}>
