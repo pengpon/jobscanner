@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-
+import { useEffect } from "react";
+import { useJobStore } from "./store/job";
 import {
   ChakraProvider,
   Container,
@@ -12,49 +11,20 @@ import {
 import { ArrowDownIcon } from "@chakra-ui/icons";
 import JobCardList from "./components/JobCardList";
 import SearchKeyword from "./components/SearchKeyword";
-import { padLeft } from "./utils/format";
 import Logo from "./assets/jobscanner-logo.png";
 import "./App.css";
 
 function App() {
-  const [jobs, setJobs] = useState([]);
-  const [updateTime, setUpdateTime] = useState("--");
+  const { jobs, updateTime, fetchData } = useJobStore();
 
   useEffect(() => {
-    getAllJobs();
-  }, []);
-
-  const getAllJobs = async () => {
-    // use cloud storage
-    // let res = await axios.get(
-    // "https://storage.googleapis.com/job-list/jobs_list.json"
-    // );
-
-    // use mock data
-    let res = await axios.get("http://localhost:3000/jobs");
-
-    let data = res.data.result;
-    let timestamp = res.data.updateTime;
-    let date = new Date(timestamp);
-    let time = `${date.getFullYear()}/${
-      date.getMonth() + 1
-    }/${date.getDate()} ${date.getHours()}:${padLeft(date.getMinutes())}`;
-
-    // filter duplicate key
-    const obj = {};
-    data.forEach((item) => {
-      item.location = item.location.replaceAll('臺', '台')
-      obj[`${item.key}`] = item;
-    });
-    let result = Object.values(obj);
-    setJobs([...result]);
-    setUpdateTime(time);
-  };
+    fetchData();
+  }, [fetchData]);
 
   const sortBySalary = () => {
     let monthJobs = [],
-        yearJobs = [],
-        otherJobs = [];
+      yearJobs = [],
+      otherJobs = [];
 
     jobs.forEach((job) => {
       switch (job.salaryType) {
@@ -77,8 +47,6 @@ function App() {
     };
     monthJobs.sort(sortFn);
     yearJobs.sort(sortFn);
-
-    setJobs([...monthJobs, ...yearJobs, ...otherJobs]);
   };
 
   return (
@@ -108,12 +76,13 @@ function App() {
               薪資高到低
               <ArrowDownIcon boxSize={4} ml={4} />
             </Button>
+            <Box textAlign="right" fontSize="sm">
+              資料更新時間:{updateTime}
+            </Box>
+            <Box textAlign="center" fontSize="md">共有 {jobs.length} 筆職缺</Box>
           </Box>
         </Box>
         <Box textAlign="center" fontSize="xl" px={5}>
-          <Box textAlign="right" fontSize="sm">
-            資料更新時間:{updateTime}
-          </Box>
           <JobCardList jobs={jobs}></JobCardList>
         </Box>
       </Container>
