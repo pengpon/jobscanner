@@ -27,7 +27,7 @@ function App() {
   const getAllJobs = async () => {
     // use cloud storage
     // let res = await axios.get(
-      // "https://storage.googleapis.com/job-list/jobs_list.json"
+    // "https://storage.googleapis.com/job-list/jobs_list.json"
     // );
 
     // use mock data
@@ -48,6 +48,36 @@ function App() {
     let result = Object.values(obj);
     setJobs([...result]);
     setUpdateTime(time);
+  };
+
+  const sortBySalary = () => {
+    let monthJobs = [],
+        yearJobs = [],
+        otherJobs = [];
+
+    jobs.forEach((job) => {
+      switch (job.salaryType) {
+        case "month":
+          monthJobs.push(job);
+          break;
+        case "year":
+          yearJobs.push(job);
+          break;
+        case "other":
+          otherJobs.push(job);
+          break;
+        default:
+          otherJobs.push(job);
+      }
+    });
+
+    const sortFn = (a, b) => {
+      return b.salary[0] - a.salary[0];
+    };
+    monthJobs.sort(sortFn);
+    yearJobs.sort(sortFn);
+
+    setJobs([...monthJobs, ...yearJobs, ...otherJobs]);
   };
 
   return (
@@ -73,7 +103,7 @@ function App() {
             <Search />
           </Box>
           <Box align="end">
-            <Button variant="ghost" color="gray.500">
+            <Button variant="ghost" color="gray.500" onClick={sortBySalary}>
               薪資高到低
               <ArrowDownIcon boxSize={4} ml={4} />
             </Button>
