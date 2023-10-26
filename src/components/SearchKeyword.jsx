@@ -5,18 +5,32 @@ import twCity from "../utils/city";
 import platform from "../utils/platform";
 
 import SelectMenu from "./SelectMenu";
-import { useState } from "react";
+import { useKeywordStore } from "../store/keyword";
 
 export default function SearchKeyword() {
-  const [keywords, setKeywords] = useState([]);
-  const handleSelectedKeyword = (keyword) => {
-    let newKeywords = [...keywords];
-    if (keywords.includes(keyword)) {
-      newKeywords = newKeywords.filter((item) => item !== keyword);
+  const {
+    locations,
+    platforms,
+    addLocation,
+    addPlatform,
+    removeLocation,
+    removePlatform,
+  } = useKeywordStore();
+
+  const handleSelectedPlatform = (platform) => {
+    if (platforms.includes(platform)) {
+      removePlatform(platform);
     } else {
-      newKeywords = [...newKeywords, keyword];
+      addPlatform(platform);
     }
-    setKeywords(newKeywords);
+  };
+
+  const handleSelectedLocation = (location) => {
+    if (locations.includes(location)) {
+      removeLocation(location);
+    } else {
+      addLocation(location);
+    }
   };
   return (
     <Box>
@@ -24,17 +38,17 @@ export default function SearchKeyword() {
         <SelectMenu
           title="刊登平台"
           list={platform}
-          handleSelectedKeyword={handleSelectedKeyword}
+          handleSelectedKeyword={handleSelectedPlatform}
         />
         <SelectMenu
           title="地點"
           list={twCity}
-          handleSelectedKeyword={handleSelectedKeyword}
+          handleSelectedKeyword={handleSelectedLocation}
         />
       </HStack>
 
       <Flex gap={2} wrap="wrap">
-        {keywords.map((item) => (
+        {[...platforms, ...locations].map((item) => (
           <Tag
             size="md"
             key={item}
