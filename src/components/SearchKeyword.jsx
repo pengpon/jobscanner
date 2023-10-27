@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { HStack, Box, Flex, Tag, TagLabel, TagCloseButton } from "@chakra-ui/react";
+import { HStack, Box, Flex, Tag, TagLabel } from "@chakra-ui/react";
 import SelectMenu from "./SelectMenu";
 import twCity from "../utils/city";
 import platform from "../utils/platform";
@@ -53,7 +53,6 @@ export default function SearchKeyword({handleSearch}) {
             colorScheme="blue"
           >
             <TagLabel>{item}</TagLabel>
-            <TagCloseButton />
           </Tag>
         ))}
       </Flex>
