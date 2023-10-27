@@ -192,7 +192,7 @@ function App() {
           {filterJobData.length !== 0 ? (
             <JobCardList jobs={filterJobData}></JobCardList>
           ) : (
-            <Box width="100%">請重新選擇條件</Box>
+            <Box width="100vw">請重新選擇條件</Box>
           )}
         </Box>
       </Container>
