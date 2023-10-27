@@ -31,12 +31,12 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       // // use mock data
-      // let res = await axios.get("http://localhost:3000/jobs");
+      let res = await axios.get("http://localhost:3000/jobs");
 
       // use cloud storage
-      let res = await axios.get(
-      "https://storage.googleapis.com/job-list/jobs_list.json"
-      );
+      // let res = await axios.get(
+      // "https://storage.googleapis.com/job-list/jobs_list.json"
+      // );
 
       const data = jobFormat(res);
       setData({ result: data.result, updateTime: data.updateTime });
@@ -44,6 +44,12 @@ function App() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (filter.locations.length === 0 && filter.platforms.length === 0) {
+      setFilterJobData([...data.result]);
+    }
+  }, [filter, data])
 
   // filter data
   const filterJob = (jobs, locations, platforms) => {
@@ -91,37 +97,60 @@ function App() {
       const result = filterJob(data.result, locations, filter.platforms);
       setFilterJobData([...result]);
     }
-    setIsSortByName(true)
+    setIsSortByName(true);
   };
 
-  const sortBySalary = () => {
-    let monthJobs = [],
-      yearJobs = [],
-      otherJobs = [];
+  const sort = () => {
+    let data = [...filterJobData];
+    function sortBySalary(data) {
+      let monthJobs = [],
+        yearJobs = [],
+        otherJobs = [];
 
-      filterJobData.forEach((job) => {
-      switch (job.salaryType) {
-        case "month":
-          monthJobs.push(job);
-          break;
-        case "year":
-          yearJobs.push(job);
-          break;
-        case "other":
-          otherJobs.push(job);
-          break;
-        default:
-          otherJobs.push(job);
+      data.forEach((job) => {
+        switch (job.salaryType) {
+          case "month":
+            monthJobs.push(job);
+            break;
+          case "year":
+            yearJobs.push(job);
+            break;
+          case "other":
+            otherJobs.push(job);
+            break;
+          default:
+            otherJobs.push(job);
+        }
+      });
+
+      function sortFn(a, b) {
+        return b.salary[0] - a.salary[0];
       }
-    });
+      monthJobs.sort(sortFn);
+      yearJobs.sort(sortFn);
 
-    const sortFn = (a, b) => {
-      return b.salary[0] - a.salary[0];
-    };
-    monthJobs.sort(sortFn);
-    yearJobs.sort(sortFn);
-    setFilterJobData([...monthJobs, ...yearJobs, ...otherJobs ])
-    setIsSortByName(false);
+      return [...monthJobs, ...yearJobs, ...otherJobs];
+    }
+
+    function sortByName(data) {
+      let tmp = [...data];
+      tmp.sort(function (a, b) {
+        if (a.companyName > b.companyName) return 1;
+        if (a.companyName < b.companyName) return -1;
+        return 0;
+      });
+      return tmp;
+    }
+
+    if (isSortByName) {
+      setIsSortByName(false);
+      data = sortBySalary(data);
+    } else {
+      setIsSortByName(true);
+      data = sortByName(data);
+    }
+
+    setFilterJobData([...data]);
   };
 
   return (
@@ -147,8 +176,8 @@ function App() {
             <SearchKeyword handleSearch={handleSearch} />
           </Box>
           <Box align="end">
-            <Button variant="ghost" color="gray.500" onClick={sortBySalary}>
-              {isSortByName ? '預設：公司名稱': '薪資由高到低'}
+            <Button variant="ghost" color="gray.500" onClick={sort}>
+              {isSortByName ? "預設：公司名稱" : "薪資由高到低"}
               <ArrowDownIcon boxSize={4} ml={4} />
             </Button>
             <Box textAlign="right" fontSize="sm">
@@ -160,7 +189,11 @@ function App() {
           </Box>
         </Box>
         <Box textAlign="center" fontSize="xl" px={5}>
-          <JobCardList jobs={filterJobData}></JobCardList>
+          {
+            filterJobData.length !==0 ?
+            (<JobCardList jobs={filterJobData}></JobCardList>)
+            : <Box width='100%'>請重新選擇條件</Box>
+          }
         </Box>
       </Container>
     </ChakraProvider>
