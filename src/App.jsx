@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useJobStore } from "./store/job";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import {
   ChakraProvider,
   Container,
@@ -11,22 +11,95 @@ import {
 import { ArrowDownIcon } from "@chakra-ui/icons";
 import JobCardList from "./components/JobCardList";
 import SearchKeyword from "./components/SearchKeyword";
+import { jobFormat } from "./utils/format";
 import Logo from "./assets/jobscanner-logo.png";
 import "./App.css";
 
 function App() {
-  const { jobs, updateTime, fetchData } = useJobStore();
+  // original data
+  const [data, setData] = useState({ result: [], updateTime: "" });
+
+  // after apply filter
+  const [filterJobData, setFilterJobData] = useState([]);
+
+  // filter conditions
+  const [filter, setFilter] = useState({ locations: [], platforms: [] });
+
+  // sort condition
+  const [isSortByName, setIsSortByName] = useState(true);
 
   useEffect(() => {
+    const fetchData = async () => {
+      // // use mock data
+      const res = await axios.get("http://localhost:3000/jobs");
+
+      // use cloud storage
+      // let res = await axios.get(
+      // "https://storage.googleapis.com/job-list/jobs_list.json"
+      // );
+
+      const data = jobFormat(res);
+      setData({ result: data.result, updateTime: data.updateTime });
+      setFilterJobData([...data.result]);
+    };
     fetchData();
-  }, [fetchData]);
+  }, []);
+
+  // filter data
+  const filterJob = (jobs, locations, platforms) => {
+    return jobs.filter((job) => {
+      let isPlatformMatch = platforms.some(function (platforms) {
+        let regex = new RegExp(platforms);
+        return regex.test(job.source);
+      });
+
+      let isLocationMatch = locations.some(function (locations) {
+        let regex = new RegExp(locations);
+        return regex.test(job.location);
+      });
+
+      if (isPlatformMatch || isLocationMatch) return job;
+    });
+  };
+
+  const handleSearch = (item, type) => {
+    // TODO: Refactor
+    if (type === "platforms") {
+      let platforms;
+      if (filter.platforms.includes(item)) {
+        platforms = [...filter.platforms].filter(
+          (platform) => platform !== item
+        );
+      } else {
+        platforms = [...filter.platforms, item];
+      }
+      setFilter({ ...filter, platforms });
+      const result = filterJob(data.result, filter.locations, platforms);
+      setFilterJobData([...result]);
+    }
+
+    if (type === "locations") {
+      let locations;
+      if (filter.locations.includes(item)) {
+        locations = [...filter.locations].filter(
+          (location) => location !== item
+        );
+      } else {
+        locations = [...filter.locations, item];
+      }
+      setFilter({ ...filter, locations });
+      const result = filterJob(data.result, locations, filter.platforms);
+      setFilterJobData([...result]);
+    }
+    setIsSortByName(true)
+  };
 
   const sortBySalary = () => {
     let monthJobs = [],
       yearJobs = [],
       otherJobs = [];
 
-    jobs.forEach((job) => {
+      filterJobData.forEach((job) => {
       switch (job.salaryType) {
         case "month":
           monthJobs.push(job);
@@ -47,6 +120,8 @@ function App() {
     };
     monthJobs.sort(sortFn);
     yearJobs.sort(sortFn);
+    setFilterJobData([...monthJobs, ...yearJobs, ...otherJobs ])
+    setIsSortByName(false);
   };
 
   return (
@@ -69,21 +144,23 @@ function App() {
             m={{ md: "auto", lg: 0 }}
           />
           <Box w={{ md: "100%", lg: "50%" }}>
-            <SearchKeyword />
+            <SearchKeyword handleSearch={handleSearch} />
           </Box>
           <Box align="end">
             <Button variant="ghost" color="gray.500" onClick={sortBySalary}>
-              薪資高到低
+              {isSortByName ? '預設：公司名稱': '薪資由高到低'}
               <ArrowDownIcon boxSize={4} ml={4} />
             </Button>
             <Box textAlign="right" fontSize="sm">
-              資料更新時間:{updateTime}
+              資料更新時間:{data.updateTime}
             </Box>
-            <Box textAlign="center" fontSize="md">共有 {jobs.length} 筆職缺</Box>
+            <Box textAlign="center" fontSize="md">
+              共有 {filterJobData.length} 筆職缺
+            </Box>
           </Box>
         </Box>
         <Box textAlign="center" fontSize="xl" px={5}>
-          <JobCardList jobs={jobs}></JobCardList>
+          <JobCardList jobs={filterJobData}></JobCardList>
         </Box>
       </Container>
     </ChakraProvider>

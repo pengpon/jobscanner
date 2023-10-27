@@ -1,37 +1,33 @@
-import { HStack, Box, Flex } from "@chakra-ui/react";
-import { Tag, TagLabel, TagCloseButton } from "@chakra-ui/react";
-
+import { useState } from 'react'
+import { HStack, Box, Flex, Tag, TagLabel, TagCloseButton } from "@chakra-ui/react";
+import SelectMenu from "./SelectMenu";
 import twCity from "../utils/city";
 import platform from "../utils/platform";
 
-import SelectMenu from "./SelectMenu";
-import { useKeywordStore } from "../store/keyword";
+export default function SearchKeyword({handleSearch}) {
+  const [keywords, setKeywords] = useState({locations: [], platforms: []});
 
-export default function SearchKeyword() {
-  const {
-    locations,
-    platforms,
-    addLocation,
-    addPlatform,
-    removeLocation,
-    removePlatform,
-  } = useKeywordStore();
-
+  // TODO: Refactor
   const handleSelectedPlatform = (platform) => {
-    if (platforms.includes(platform)) {
-      removePlatform(platform);
+    if (!keywords.platforms.includes(platform)) {
+      setKeywords({...keywords, platforms: [...keywords.platforms, platform]})
     } else {
-      addPlatform(platform);
+      let platforms = [...keywords.platforms].filter(item => item !== platform);
+      setKeywords({...keywords, platforms})
     }
-  };
+    handleSearch(platform, 'platforms')
+  }
 
   const handleSelectedLocation = (location) => {
-    if (locations.includes(location)) {
-      removeLocation(location);
+    if (!keywords.locations.includes(location)) {
+      setKeywords({...keywords, locations: [...keywords.locations, location]})
     } else {
-      addLocation(location);
+      let locations = [...keywords.locations].filter(item => item !== location);
+      setKeywords({...keywords, locations})
     }
-  };
+    handleSearch(location, 'locations')
+  }
+
   return (
     <Box>
       <HStack mb={4}>
@@ -48,7 +44,7 @@ export default function SearchKeyword() {
       </HStack>
 
       <Flex gap={2} wrap="wrap">
-        {[...platforms, ...locations].map((item) => (
+        {[...keywords.platforms, ...keywords.locations].map((item) => (
           <Tag
             size="md"
             key={item}

@@ -7,4 +7,21 @@ const padLeft = (value) => {
   return value < 10 ? `0${value}` : `${value}`;
 };
 
-export { toThousandSeparator, padLeft };
+const jobFormat = (res) => {
+  let data = res.data.result;
+  let timestamp = res.data.updateTime;
+  let date = new Date(timestamp);
+  let time = `${date.getFullYear()}/${
+    date.getMonth() + 1
+  }/${date.getDate()} ${date.getHours()}:${padLeft(date.getMinutes())}`;
+
+  // filter duplicate key & replace location string
+  const obj = {};
+  data.forEach((item) => {
+    item.location = item.location.replaceAll('臺', '台')
+    obj[`${item.key}`] = item;
+  });
+  return {result: Object.values(obj), updateTime: time};
+}
+
+export { toThousandSeparator, padLeft, jobFormat };
