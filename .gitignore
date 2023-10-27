@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Firebase
-./firebase.js
+*firebase.js
