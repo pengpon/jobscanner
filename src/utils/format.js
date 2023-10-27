@@ -13,7 +13,7 @@ const jobFormat = (res) => {
   let date = new Date(timestamp);
   let time = `${date.getFullYear()}/${
     date.getMonth() + 1
-  }/${date.getDate()} ${date.getHours()}:${padLeft(date.getMinutes())}`;
+  }/${date.getDate()} ${padLeft(date.getHours())}:${padLeft(date.getMinutes())}`;
 
   // filter duplicate key & replace location string
   const obj = {};
