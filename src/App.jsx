@@ -31,12 +31,12 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       // // use mock data
-      const res = await axios.get("http://localhost:3000/jobs");
+      // let res = await axios.get("http://localhost:3000/jobs");
 
       // use cloud storage
-      // let res = await axios.get(
-      // "https://storage.googleapis.com/job-list/jobs_list.json"
-      // );
+      let res = await axios.get(
+      "https://storage.googleapis.com/job-list/jobs_list.json"
+      );
 
       const data = jobFormat(res);
       setData({ result: data.result, updateTime: data.updateTime });
