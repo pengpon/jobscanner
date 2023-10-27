@@ -31,12 +31,12 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       // // use mock data
-      let res = await axios.get("http://localhost:3000/jobs");
+      // let res = await axios.get("http://localhost:3000/jobs");
 
       // use cloud storage
-      // let res = await axios.get(
-      // "https://storage.googleapis.com/job-list/jobs_list.json"
-      // );
+      let res = await axios.get(
+        "https://storage.googleapis.com/job-list/jobs_list.json"
+      );
 
       const data = jobFormat(res);
       setData({ result: data.result, updateTime: data.updateTime });
@@ -49,7 +49,7 @@ function App() {
     if (filter.locations.length === 0 && filter.platforms.length === 0) {
       setFilterJobData([...data.result]);
     }
-  }, [filter, data])
+  }, [filter, data]);
 
   // filter data
   const filterJob = (jobs, locations, platforms) => {
@@ -189,11 +189,11 @@ function App() {
           </Box>
         </Box>
         <Box textAlign="center" fontSize="xl" px={5}>
-          {
-            filterJobData.length !==0 ?
-            (<JobCardList jobs={filterJobData}></JobCardList>)
-            : <Box width='100%'>請重新選擇條件</Box>
-          }
+          {filterJobData.length !== 0 ? (
+            <JobCardList jobs={filterJobData}></JobCardList>
+          ) : (
+            <Box width="100%">請重新選擇條件</Box>
+          )}
         </Box>
       </Container>
     </ChakraProvider>
