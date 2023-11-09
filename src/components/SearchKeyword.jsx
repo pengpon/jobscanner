@@ -6,41 +6,43 @@ import platform from "../utils/platform";
 
 export default function SearchKeyword({handleSearch}) {
   const [keywords, setKeywords] = useState({locations: [], platforms: []});
-
-  // TODO: Refactor
-  const handleSelectedPlatform = (platform) => {
-    if (!keywords.platforms.includes(platform)) {
-      setKeywords({...keywords, platforms: [...keywords.platforms, platform]})
-    } else {
-      let platforms = [...keywords.platforms].filter(item => item !== platform);
-      setKeywords({...keywords, platforms})
+  const keywordList = [
+    {
+      title: "刊登平台",
+      dataType: "platforms",
+      option: platform
+    },
+    {
+      title: "地點",
+      dataType: "locations",
+      option: twCity
     }
-    handleSearch(platform, 'platforms')
+  ];
+
+  const handleSelectedKeyword = (keyword, type) => {
+    if (!keywords[type].includes(keyword)) {
+      setKeywords({...keywords, [type]: [...keywords[type], keyword]})
+    } else {
+      let data = [...keywords[type]].filter(item => item !== keyword);
+      setKeywords({...keywords, [type]: data})
+    }
+    handleSearch(keyword, type)
   }
 
-  const handleSelectedLocation = (location) => {
-    if (!keywords.locations.includes(location)) {
-      setKeywords({...keywords, locations: [...keywords.locations, location]})
-    } else {
-      let locations = [...keywords.locations].filter(item => item !== location);
-      setKeywords({...keywords, locations})
-    }
-    handleSearch(location, 'locations')
-  }
+  const selectMenus = keywordList.map(item => (
+    <SelectMenu
+      key={item.dataType}
+      title={item.title}
+      list={item.option}
+      type={item.dataType}
+      handleSelectedKeyword={handleSelectedKeyword}
+    />
+  ))
 
   return (
     <Box>
       <HStack mb={4}>
-        <SelectMenu
-          title="刊登平台"
-          list={platform}
-          handleSelectedKeyword={handleSelectedPlatform}
-        />
-        <SelectMenu
-          title="地點"
-          list={twCity}
-          handleSelectedKeyword={handleSelectedLocation}
-        />
+      {selectMenus}
       </HStack>
 
       <Flex gap={2} wrap="wrap">
