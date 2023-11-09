@@ -52,7 +52,8 @@ function App() {
   }, [filter, data]);
 
   // filter data
-  const filterJob = (jobs, locations, platforms) => {
+  const filterJob = (jobs, filters) => {
+    const { platforms, locations } = filters;
     return jobs.filter((job) => {
       let isPlatformMatch = platforms.some(function (platforms) {
         let regex = new RegExp(platforms);
@@ -69,34 +70,18 @@ function App() {
   };
 
   const handleSearch = (item, type) => {
-    // TODO: Refactor
-    if (type === "platforms") {
-      let platforms;
-      if (filter.platforms.includes(item)) {
-        platforms = [...filter.platforms].filter(
-          (platform) => platform !== item
+      let keywords;
+      if (filter[type].includes(item)) {
+        keywords = [...filter[type]].filter(
+          (keyword) => keyword !== item
         );
       } else {
-        platforms = [...filter.platforms, item];
+        keywords = [...filter[type], item];
       }
-      setFilter({ ...filter, platforms });
-      const result = filterJob(data.result, filter.locations, platforms);
+      setFilter({ ...filter, [type]: keywords });
+      const result = filterJob(data.result, {...filter, [type]: keywords});
       setFilterJobData([...result]);
-    }
 
-    if (type === "locations") {
-      let locations;
-      if (filter.locations.includes(item)) {
-        locations = [...filter.locations].filter(
-          (location) => location !== item
-        );
-      } else {
-        locations = [...filter.locations, item];
-      }
-      setFilter({ ...filter, locations });
-      const result = filterJob(data.result, locations, filter.platforms);
-      setFilterJobData([...result]);
-    }
     setIsSortByName(true);
   };
 
