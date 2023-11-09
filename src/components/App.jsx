@@ -9,10 +9,10 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { ArrowDownIcon } from "@chakra-ui/icons";
-import JobCardList from "./components/JobCardList";
-import SearchKeyword from "./components/SearchKeyword";
-import { jobFormat } from "./utils/format";
-import Logo from "./assets/jobscanner-logo.png";
+import JobCardList from "./JobCardList";
+import SearchKeyword from "./SearchKeyword";
+import { jobFormat } from "../utils/format";
+import Logo from "../assets/jobscanner-logo.png";
 import "./App.css";
 
 function App() {
