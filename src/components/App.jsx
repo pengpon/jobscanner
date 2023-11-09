@@ -9,10 +9,10 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { ArrowDownIcon } from "@chakra-ui/icons";
-import JobCardList from "./components/JobCardList";
-import SearchKeyword from "./components/SearchKeyword";
-import { jobFormat } from "./utils/format";
-import Logo from "./assets/jobscanner-logo.png";
+import JobCardList from "./JobCardList";
+import SearchKeyword from "./SearchKeyword";
+import { jobFormat } from "../utils/format";
+import Logo from "../assets/jobscanner-logo.png";
 import "./App.css";
 
 function App() {
@@ -52,7 +52,8 @@ function App() {
   }, [filter, data]);
 
   // filter data
-  const filterJob = (jobs, locations, platforms) => {
+  const filterJob = (jobs, filters) => {
+    const { platforms, locations } = filters;
     return jobs.filter((job) => {
       let isPlatformMatch = platforms.some(function (platforms) {
         let regex = new RegExp(platforms);
@@ -69,34 +70,18 @@ function App() {
   };
 
   const handleSearch = (item, type) => {
-    // TODO: Refactor
-    if (type === "platforms") {
-      let platforms;
-      if (filter.platforms.includes(item)) {
-        platforms = [...filter.platforms].filter(
-          (platform) => platform !== item
+      let keywords;
+      if (filter[type].includes(item)) {
+        keywords = [...filter[type]].filter(
+          (keyword) => keyword !== item
         );
       } else {
-        platforms = [...filter.platforms, item];
+        keywords = [...filter[type], item];
       }
-      setFilter({ ...filter, platforms });
-      const result = filterJob(data.result, filter.locations, platforms);
+      setFilter({ ...filter, [type]: keywords });
+      const result = filterJob(data.result, {...filter, [type]: keywords});
       setFilterJobData([...result]);
-    }
 
-    if (type === "locations") {
-      let locations;
-      if (filter.locations.includes(item)) {
-        locations = [...filter.locations].filter(
-          (location) => location !== item
-        );
-      } else {
-        locations = [...filter.locations, item];
-      }
-      setFilter({ ...filter, locations });
-      const result = filterJob(data.result, locations, filter.platforms);
-      setFilterJobData([...result]);
-    }
     setIsSortByName(true);
   };
 

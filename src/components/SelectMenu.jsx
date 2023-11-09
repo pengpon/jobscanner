@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from '@chakra-ui/icons'
 
-export default function SelectMenu({ title, list, handleSelectedKeyword }) {
+export default function SelectMenu({ title, list, handleSelectedKeyword, type }) {
   return (
     <Menu closeOnSelect={true}>
       <MenuButton as={Button} colorScheme='blue' size='md' >{title} <ChevronDownIcon/></MenuButton>
@@ -18,7 +18,7 @@ export default function SelectMenu({ title, list, handleSelectedKeyword }) {
             <MenuItemOption
               key={item.value}
               value={item.value}
-              onClick={() => handleSelectedKeyword(item.name)}
+              onClick={() => handleSelectedKeyword(item.name, type)}
             >
               {item.name}
             </MenuItemOption>
