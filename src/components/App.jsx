@@ -54,18 +54,25 @@ function App() {
   // filter data
   const filterJob = (jobs, filters) => {
     const { platforms, locations } = filters;
+
     return jobs.filter((job) => {
-      let isPlatformMatch = platforms.some(function (platforms) {
-        let regex = new RegExp(platforms);
+      let isPlatformMatch, isLocationMatch;
+
+      isPlatformMatch = platforms.some(function (platform) {
+        let regex = new RegExp(platform);
         return regex.test(job.source);
       });
 
-      let isLocationMatch = locations.some(function (locations) {
-        let regex = new RegExp(locations);
+      isLocationMatch = locations.some(function (location) {
+        let regex = new RegExp(location);
         return regex.test(job.location);
       });
 
-      if (isPlatformMatch || isLocationMatch) return job;
+      // default = select all
+      if (platforms.length === 0) isPlatformMatch = true;
+      if (locations.length === 0) isLocationMatch = true;
+
+      if (isPlatformMatch && isLocationMatch) return job;
     });
   };
 
