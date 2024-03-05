@@ -35,7 +35,7 @@ function App() {
 
       // use cloud storage
       let res = await axios.get(
-        "https://storage.googleapis.com/job-list/jobs_list.json"
+        `https://storage.googleapis.com/job-list/jobs_list.json?timestamp=${new Date().getTime()}`
       );
 
       const data = jobFormat(res);
