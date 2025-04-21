@@ -1,6 +1,8 @@
 # Jobscanner
 
-定期抓取三大求職平台(104、yourator、CakeResume) 職缺資料，彙整至 `Cloud Storage``
+**2025/04 更新：104 robots.txt 有異動，目前 Jobscanner 僅抓取 yourator、CakeResume 資料**
+
+定期抓取~~三大~~求職平台(~~104~~、yourator、CakeResume) 職缺資料，彙整至 `Cloud Storage`
 
 使用 Chakra UI 製作頁面，方便一覽前端相關職缺
 
